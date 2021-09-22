@@ -1,0 +1,15 @@
+﻿@model UserViewModel
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>
+
+<div>
+    Email: @Html.DisplayFor(model => model.Email)
+    <br />
+    First name: @Html.DisplayFor(model => model.FirstName)
+    <br />
+    Last name: @Html.DisplayFor(model => model.LastName)
+</div>
