@@ -2,12 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimpleDotnetMvc.Models;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace SimpleDotnetMvc.Controllers
 {
@@ -29,10 +27,18 @@ namespace SimpleDotnetMvc.Controllers
         public IActionResult Privacy()
         {
             List<Claim> claims = User.Claims.ToList();
+
+            // Keycloak mapped fields
+            //return View(new UserViewModel {
+            //    Email =  getClaim(claims, ClaimTypes.Email),
+            //    FirstName = getClaim(claims, ClaimTypes.GivenName),
+            //    LastName = getClaim(claims, ClaimTypes.Surname)
+            //});
+
+            // Azure Ad
             return View(new UserViewModel {
-                Email =  getClaim(claims, ClaimTypes.Email),
-                FirstName = getClaim(claims, ClaimTypes.GivenName),
-                LastName = getClaim(claims, ClaimTypes.Surname)
+                Email = GetClaim(claims, "preferred_username"),
+                Name = GetClaim(claims, "name")
             });
         }
 
@@ -42,7 +48,7 @@ namespace SimpleDotnetMvc.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private string getClaim(List<Claim> claims, string key)
+        private static string GetClaim(List<Claim> claims, string key)
         {
             Claim claim = claims.Find(claim => claim.Type.Equals(key));
             return claim.Value;

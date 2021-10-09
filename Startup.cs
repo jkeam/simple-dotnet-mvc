@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,9 @@ namespace SimpleDotnetMvc
         {
             // cookie
             //services.ConfigureApplicationCookie();
+
+            /*
+            // Keycloak and Cookie
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -75,6 +79,10 @@ namespace SimpleDotnetMvc
                 };
 
             });
+            */
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+
             services.AddControllersWithViews();
         }
 
@@ -89,8 +97,9 @@ namespace SimpleDotnetMvc
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
 
             app.UseRouting();
 
