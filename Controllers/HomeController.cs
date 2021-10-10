@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web;
 using SimpleDotnetMvc.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace SimpleDotnetMvc.Controllers
         [Authorize]
         public IActionResult Privacy()
         {
-            List<Claim> claims = User.Claims.ToList();
+            AppUser user = new AppUser(User);
 
             // Keycloak mapped fields
             //return View(new UserViewModel {
@@ -37,21 +38,16 @@ namespace SimpleDotnetMvc.Controllers
 
             // Azure Ad
             return View(new UserViewModel {
-                Email = GetClaim(claims, "preferred_username"),
-                Name = GetClaim(claims, "name")
-            });
+                Id = user.GetId(),
+                Email = user.GetEmail(),
+                Name = user.GetName()
+            }); ;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        private static string GetClaim(List<Claim> claims, string key)
-        {
-            Claim claim = claims.Find(claim => claim.Type.Equals(key));
-            return claim.Value;
         }
     }
 }
