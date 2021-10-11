@@ -1,21 +1,14 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SimpleDotnetMvc.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleDotnetMvc
 {
@@ -28,88 +21,8 @@ namespace SimpleDotnetMvc
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // cookie only
-            // services.ConfigureApplicationCookie();
-
-            // cookie
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //})
-            //.AddCookie(options =>
-            //{
-            //    options.CookieManager = new ChunkingCookieManager();
-            //    options.Cookie.HttpOnly = true;
-            //    options.Cookie.SameSite = SameSiteMode.Lax;
-            //    //options.Cookie.SecurePolicy = CookieSecurePolicy.
-            //});
-
-            /*
-            // Keycloak
-            services.AddOpenIdConnect("Keycloak", options =>
-            {
-                options.Authority = Configuration["oidc:domain"];
-                options.ClientId = Configuration["oidc:clientId"];
-                options.ClientSecret = Configuration["oidc:clientSecret"];
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.Scope.Clear();
-                options.Scope.Add("openid profile email");
-                options.CallbackPath = new Microsoft.AspNetCore.Http.PathString("/callback");
-                options.ClaimsIssuer = "Keycloak";
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.SaveTokens = true;
-                options.RequireHttpsMetadata = false;
-
-                options.Events = new OpenIdConnectEvents
-                {
-                    // handle the logout redirection
-                    OnRedirectToIdentityProviderForSignOut = (context) =>
-                    {
-                        var logoutUri = $"{Configuration["oidc:domain"]}/protocol/openid-connect/logout?redirect_uri=http%3A%2F%2F192.168.1.5%3A5000%2F";
-
-                        var postLogoutUri = context.Properties.RedirectUri;
-                        if (!string.IsNullOrEmpty(postLogoutUri))
-                        {
-                            if (postLogoutUri.StartsWith("/"))
-                            {
-                                // transform to absolute
-                                var request = context.Request;
-                                postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
-                            }
-                            logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
-                        }
-
-                        context.Response.Redirect(logoutUri);
-                        context.HandleResponse();
-
-                        return Task.CompletedTask;
-                    }
-                };
-
-            });
-            */
-
-            // Cookie config for when using Azure AD
-            /*
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                // options.CheckConsentNeeded = context => true;
-                // options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
-                // options.HandleSameSiteCookieCompatibility();
-
-                options.Secure = CookieSecurePolicy.None;
-                options.MinimumSameSitePolicy = SameSiteMode.Strict;
-            });
-            */
-
-            // Auth
             //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(options =>
             {
@@ -120,10 +33,9 @@ namespace SimpleDotnetMvc
                 options.ClientSecret = Configuration["AD_CLIENT_SECRET"];
                 options.CallbackPath = Configuration["AD_CALLBACK_PATH"];
             });
-            //}, cookieScheme: null);
-
 
             // Include headers
+            // Inspired by https://seankilleen.com/2020/06/solved-net-core-azure-ad-in-docker-container-incorrectly-uses-an-non-https-redirect-uri/
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -153,6 +65,7 @@ namespace SimpleDotnetMvc
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
