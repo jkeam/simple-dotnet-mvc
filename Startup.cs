@@ -103,6 +103,7 @@ namespace SimpleDotnetMvc
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
                 // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
                 options.HandleSameSiteCookieCompatibility();
+                options.Secure = CookieSecurePolicy.Always;
             });
 
             // Auth
