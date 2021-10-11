@@ -29,19 +29,21 @@ namespace SimpleDotnetMvc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // cookie
-            //services.ConfigureApplicationCookie();
+            // cookie only
+            // services.ConfigureApplicationCookie();
 
-            /*
-            // Keycloak and Cookie
+            // cookie
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie()
-            .AddOpenIdConnect("Keycloak", options =>
+            .AddCookie();
+
+            /*
+            // Keycloak
+            services.AddOpenIdConnect("Keycloak", options =>
             {
                 options.Authority = Configuration["oidc:domain"];
                 options.ClientId = Configuration["oidc:clientId"];
@@ -117,7 +119,7 @@ namespace SimpleDotnetMvc
             }
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
-            //app.UseCookiePolicy();
+            app.UseCookiePolicy();
 
             app.UseRouting();
 
