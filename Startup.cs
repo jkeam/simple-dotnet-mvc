@@ -12,6 +12,7 @@ using SimpleDotnetMvc.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleDotnetMvc
@@ -84,11 +85,20 @@ namespace SimpleDotnetMvc
             */
 
             // Auth
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(options =>
+            {
+                options.Instance = "https://login.microsoftonline.com/";
+                options.Domain = Configuration["AD_DOMAIN"];
+                options.TenantId = Configuration["AD_TENANT_ID"];
+                options.ClientId = Configuration["AD_CLIENT_ID"];
+                options.ClientSecret = Configuration["AD_CLIENT_SECRET"];
+                options.CallbackPath = Configuration["AD_CALLBACK_PATH"];
+            });
 
             // DB
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(GetDatabaseConnectionString()));
 
             // MVC
             services.AddControllersWithViews();
@@ -120,6 +130,15 @@ namespace SimpleDotnetMvc
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private string GetDatabaseConnectionString()
+        {
+            var config = new StringBuilder(Configuration["DatabaseConnectionUrl"]);
+            return config.Replace("USER", Configuration["DB_USER"])
+                                .Replace("PASS", Configuration["DB_PASS"])
+                                .Replace("HOST", Configuration["DB_HOST"])
+                                .ToString();
         }
     }
 }
