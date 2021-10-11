@@ -115,7 +115,7 @@ namespace SimpleDotnetMvc
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             //app.UseCookiePolicy();
 
