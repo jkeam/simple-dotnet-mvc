@@ -44,8 +44,8 @@ namespace SimpleDotnetMvc
             {
                 options.CookieManager = new ChunkingCookieManager();
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Strict;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                //options.Cookie.SecurePolicy = CookieSecurePolicy.
             });
 
             /*
