@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,19 +35,19 @@ namespace SimpleDotnetMvc
             // services.ConfigureApplicationCookie();
 
             // cookie
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.CookieManager = new ChunkingCookieManager();
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-                //options.Cookie.SecurePolicy = CookieSecurePolicy.
-            });
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //})
+            //.AddCookie(options =>
+            //{
+            //    options.CookieManager = new ChunkingCookieManager();
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.SameSite = SameSiteMode.Lax;
+            //    //options.Cookie.SecurePolicy = CookieSecurePolicy.
+            //});
 
             /*
             // Keycloak
@@ -118,7 +119,20 @@ namespace SimpleDotnetMvc
                 options.ClientId = Configuration["AD_CLIENT_ID"];
                 options.ClientSecret = Configuration["AD_CLIENT_SECRET"];
                 options.CallbackPath = Configuration["AD_CALLBACK_PATH"];
-            }, cookieScheme: null);
+            });
+            //}, cookieScheme: null);
+
+
+            // Include headers
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                // Only loopback proxies are allowed by default.
+                // Clear that restriction because forwarders are enabled by explicit
+                // configuration.
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
 
             // DB
             //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -142,6 +156,7 @@ namespace SimpleDotnetMvc
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseForwardedHeaders();
 
             app.UseRouting();
 
