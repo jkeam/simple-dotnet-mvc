@@ -174,9 +174,9 @@ namespace SimpleDotnetMvc
         private string GetDatabaseConnectionString()
         {
             var config = new StringBuilder(Configuration["DB_CONNECTION_URL"]);
-            return config.Replace("USER", Configuration["DB_USER"])
-                                .Replace("PASS", Configuration["DB_PASS"])
-                                .Replace("HOST", Configuration["DB_HOST"])
+            return config.Replace("DB_USER", Configuration["DB_USER"])
+                                .Replace("DB_PASS", Configuration["DB_PASS"])
+                                .Replace("DB_HOST", Configuration["DB_HOST"])
                                 .ToString();
         }
     }
