@@ -34,7 +34,6 @@ namespace SimpleDotnetMvc
             // services.ConfigureApplicationCookie();
 
             // cookie
-            /*
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -48,7 +47,6 @@ namespace SimpleDotnetMvc
                 options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
-            */
 
             /*
             // Keycloak
@@ -96,6 +94,7 @@ namespace SimpleDotnetMvc
             */
 
             // Cookie config for when using Azure AD
+            /*
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -107,6 +106,7 @@ namespace SimpleDotnetMvc
                 options.Secure = CookieSecurePolicy.None;
                 options.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
+            */
 
             // Auth
             //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
@@ -118,7 +118,7 @@ namespace SimpleDotnetMvc
                 options.ClientId = Configuration["AD_CLIENT_ID"];
                 options.ClientSecret = Configuration["AD_CLIENT_SECRET"];
                 options.CallbackPath = Configuration["AD_CALLBACK_PATH"];
-            });
+            }, cookieScheme: null);
 
             // DB
             //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
