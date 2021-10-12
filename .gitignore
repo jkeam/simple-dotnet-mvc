@@ -455,3 +455,6 @@ $RECYCLE.BIN/
 
 # custom
 ignore
+
+.odo/odo-file-index.json
+ignore
