@@ -1,5 +1,9 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SimpleDotnetMvc.Data;
 
 namespace SimpleDotnetMvc
 {
@@ -7,7 +11,19 @@ namespace SimpleDotnetMvc
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            var migrate = Environment.GetEnvironmentVariable("MIGRATION");
+            if (migrate != null && migrate.ToLower() == "true") {
+                using (var scope = host.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    Console.WriteLine("Database migrating...");
+                    db.Database.Migrate();
+                    Console.WriteLine("Database migrated");
+                }
+                return;
+            }
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
