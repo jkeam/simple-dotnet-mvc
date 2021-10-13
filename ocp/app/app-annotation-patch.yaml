@@ -1,0 +1,5 @@
+metadata:
+  annotations:
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"database-app"}]'
+    app.openshift.io/vcs-uri: 'https://github.com/jkeam/simple-dotnet-mvc'
+    app.openshift.io/vcs-ref: 'main'

@@ -1,0 +1,80 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: simple-dotnet-mvc-db-migration
+  annotations:
+    description: "Simple Dotnet MVC DB migration"
+    tags: "database,mssql,migration"
+  labels:
+    app: simple-dotnet-mvc-db-migration
+    app.kubernetes.io/part-of: simple-dotnet-mvc
+    app.openshift.io/connects-to: database-app
+    app.openshift.io/runtime: icon-dotnet
+objects:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: simple-dotnet-mvc-db-migration
+  spec:
+    template:
+      spec:
+        containers:
+        - name: migration
+          image: ${IMAGE_URL}
+          env:
+            - name: AD_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_DOMAIN
+            - name: AD_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_TENANT_ID
+            - name: AD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_CLIENT_ID
+            - name: AD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_CLIENT_SECRET
+            - name: AD_CALLBACK_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_CALLBACK_PATH
+            - name: DB_CONNECTION_URL
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_CONNECTION_URL
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_USER
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_PASS
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_HOST
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: MIGRATION
+              value: 'true'
+        restartPolicy: Never
+    backoffLimit: 4
+parameters:
+- name: IMAGE_URL
+  display: Image URL
+  description: Image URL to run migration from
+  required: true
