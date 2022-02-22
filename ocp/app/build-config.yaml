@@ -1,7 +1,7 @@
-kind: BuildConfig
 apiVersion: build.openshift.io/v1
+kind: BuildConfig
 metadata:
-  annotations:
+  name: simple-dotnet-mvc
   namespace: dev
   labels:
     app: simple-dotnet-mvc
@@ -17,7 +17,6 @@ spec:
       kind: DockerImage
       name: >-
         quay-registry-quay-openshift-operators.apps.cluster-9462.9462.sandbox1207.opentlc.com/admin/simple-dotnet-mvc:latest
-  resources: {}
   successfulBuildsHistoryLimit: 5
   failedBuildsHistoryLimit: 5
   strategy:
@@ -27,7 +26,6 @@ spec:
         kind: ImageStreamTag
         namespace: openshift
         name: 'dotnet:5.0-ubi8'
-  postCommit: {}
   source:
     type: Git
     git:
