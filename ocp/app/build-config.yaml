@@ -1,0 +1,48 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  annotations:
+  namespace: dev
+  labels:
+    app: simple-dotnet-mvc
+    app.kubernetes.io/component: simple-dotnet-mvc
+    app.kubernetes.io/instance: simple-dotnet-mvc
+    app.kubernetes.io/part-of: simple-dotnet-mvc
+    app.openshift.io/connects-to: database-app
+    app.openshift.io/runtime: dotnet
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: DockerImage
+      name: >-
+        quay-registry-quay-openshift-operators.apps.cluster-9462.9462.sandbox1207.opentlc.com/admin/simple-dotnet-mvc:latest
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        namespace: openshift
+        name: 'dotnet:5.0-ubi8'
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/jkeam/simple-dotnet-mvc.git'
+      ref: dev
+  triggers:
+    - type: GitHub
+      github:
+        secret: zh1EUJpvdWLoiHPboXD_
+    - type: Generic
+      generic:
+        secret: HG5QagQH46r84rvpmdCk
+    - type: ConfigChange
+    - type: ImageChange
+      imageChange:
+        lastTriggeredImageID: >-
+          image-registry.openshift-image-registry.svc:5000/openshift/dotnet@sha256:27850b4c2e91da98ece5f229610f58bd9f8f6efc1346728342a7ecb6990160fd
+  runPolicy: Serial
