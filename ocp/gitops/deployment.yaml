@@ -33,7 +33,7 @@ spec:
       containers:
         - name: simple-dotnet-mvc
           image: >-
-            quay-registry-quay-openshift-operators.apps.cluster-9462.9462.sandbox1207.opentlc.com/admin/simple-dotnet-mvc@latest
+            quay-registry-quay-openshift-operators.apps.cluster-9462.9462.sandbox1207.opentlc.com/admin/simple-dotnet-mvc:latest
           ports:
             - containerPort: 8080
               protocol: TCP
