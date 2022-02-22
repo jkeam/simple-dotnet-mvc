@@ -1,7 +1,7 @@
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
-  name: simple-dotnet-mvc-build-config
+  name: simple-dotnet-mvc
   namespace: dev
   labels:
     app: simple-dotnet-mvc
