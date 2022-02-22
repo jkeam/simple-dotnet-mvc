@@ -1,0 +1,108 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"database-app"}]'
+    app.openshift.io/vcs-ref: dev
+    app.openshift.io/vcs-uri: 'https://github.com/jkeam/simple-dotnet-mvc'
+    image.openshift.io/triggers: >-
+      [{"from":{"kind":"ImageStreamTag","name":"simple-dotnet-mvc-quay:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"simple-dotnet-mvc\")].image"}]
+  name: simple-dotnet-mvc
+  namespace: dev
+  labels:
+    app: simple-dotnet-mvc
+    app.kubernetes.io/component: simple-dotnet-mvc
+    app.kubernetes.io/instance: simple-dotnet-mvc
+    app.kubernetes.io/part-of: simple-dotnet-mvc
+    app.openshift.io/connects-to: database-app
+    app.openshift.io/runtime: dotnet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: simple-dotnet-mvc
+      app.openshift.io/connects-to: database-app
+      app.openshift.io/runtime: dotnet
+      deployment: simple-dotnet-mvc
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: simple-dotnet-mvc
+        app.openshift.io/connects-to: database-app
+        app.openshift.io/runtime: dotnet
+        deployment: simple-dotnet-mvc
+    spec:
+      containers:
+        - name: simple-dotnet-mvc
+          image: >-
+            quay-registry-quay-openshift-operators.apps.cluster-9462.9462.sandbox1207.opentlc.com/admin/simple-dotnet-mvc@latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: AD_CALLBACK_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_CALLBACK_PATH
+            - name: AD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_CLIENT_ID
+            - name: AD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_CLIENT_SECRET
+            - name: AD_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_DOMAIN
+            - name: AD_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: AD_TENANT_ID
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: DB_CONNECTION_URL
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_CONNECTION_URL
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_HOST
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_PASS
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: simple-dotnet-mvc-secret
+                  key: DB_USER
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
