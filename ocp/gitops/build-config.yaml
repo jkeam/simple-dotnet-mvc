@@ -1,8 +1,6 @@
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
-  annotations:
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
   name: simple-dotnet-mvc
   namespace: dev
   labels:

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: simple-dotnet-mvc
+spec:
+  destination:
+    name: ''
+    namespace: dev
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: ocp/gitops
+    repoURL: 'https://github.com/jkeam/simple-dotnet-mvc'
+    targetRevision: dev
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
